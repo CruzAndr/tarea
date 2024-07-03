@@ -20,7 +20,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipRAR {
 
     /**
-     * este comprime archivos
+     * este metodo  comprime archivos
      * @param filePath
      * @param zipFilePath 
      */
@@ -43,7 +43,7 @@ public class ZipRAR {
                 zos.write(buffer, 0, length);
             }
             zos.closeEntry();
-            System.out.println("Archivo comprimido exitosamente: " + zipFilePath);
+            System.out.println("Archivo comprimido " + zipFilePath);
         } catch (IOException e) {
             System.err.println("Error al comprimir el archivo: " + e.getMessage());
         }
@@ -56,7 +56,7 @@ public class ZipRAR {
     public static void comprimirDirectorio(String dirPath, String zipFilePath) {
         File dirToZip = new File(dirPath);
         if (!dirToZip.exists() || !dirToZip.isDirectory()) {
-            System.err.println("El directorio a comprimir no existe o no es un directorio: " + dirPath);
+            System.err.println("El directorio a comprimir no existe" + dirPath);
             return;
         }
         if (!zipFilePath.toLowerCase().endsWith(".zip")) {
@@ -65,7 +65,7 @@ public class ZipRAR {
         try (FileOutputStream fos = new FileOutputStream(zipFilePath);
              ZipOutputStream zos = new ZipOutputStream(fos)) {
             comprimirDirectorioRecursivamente(dirToZip, dirToZip.getName(), zos);
-            System.out.println("Directorio comprimido exitosamente: " + zipFilePath);
+            System.out.println("Directorio comprimido: " + zipFilePath);
         } catch (IOException e) {
             System.err.println("Error al comprimir el directorio: " + e.getMessage());
         }
@@ -139,7 +139,7 @@ public class ZipRAR {
                     zis.closeEntry();
                     zipEntry = zis.getNextEntry();
                 }
-                System.out.println("Archivo descomprimido exitosamente en: " + destDir);
+                System.out.println("Archivo descomprimido : " + destDir);
             }
         } catch (IOException e) {
             System.err.println("Error al descomprimir el archivo: " + e.getMessage());
@@ -152,26 +152,19 @@ public class ZipRAR {
      * @param zipFilePath
      * @param password 
      */
-    public static void comprimirArchivoConContraseña(String filePath, String zipFilePath, String password) {
+public static void zipFileWithPassword(String filePath, String zipFilePath, String password) {
         File fileToZip = new File(filePath);
         if (!fileToZip.exists()) {
             System.err.println("El archivo a comprimir no existe: " + filePath);
             return;
         }
 
-        if (password == null || password.isEmpty()) {
-            System.err.println("Error: La contraseña no puede estar vacía.");
-            return;
-        }
-
         try {
-            ZipFile zipFile = new ZipFile(zipFilePath);
+            ZipFile zipFile = new ZipFile(zipFilePath, password.toCharArray());
             ZipParameters zipParameters = new ZipParameters();
             zipParameters.setEncryptFiles(true);
             zipParameters.setEncryptionMethod(EncryptionMethod.ZIP_STANDARD);
             zipFile.addFile(fileToZip, zipParameters);
-            zipFile.setPassword(password.toCharArray());
-
             System.out.println("Archivo comprimido exitosamente con contraseña: " + zipFilePath);
         } catch (ZipException e) {
             System.err.println("Error al comprimir el archivo con contraseña: " + e.getMessage());
@@ -225,34 +218,34 @@ public class ZipRAR {
                     null, options, options[0]);
 
             switch (option) {
-                case 0: // Comprimir archivo
+                case 0: 
                     String filePath = JOptionPane.showInputDialog("Ingrese la ruta del archivo a comprimir:");
                     String zipFilePath = JOptionPane.showInputDialog("Ingrese la ruta del archivo ZIP de salida:");
                     ZipRAR.comprimirArchivo(filePath, zipFilePath);
                     break;
-                case 1: // Comprimir directorio
+                case 1: 
                     String dirPath = JOptionPane.showInputDialog("Ingrese la ruta del directorio a comprimir:");
                     zipFilePath = JOptionPane.showInputDialog("Ingrese la ruta del archivo ZIP de salida:");
                     ZipRAR.comprimirDirectorio(dirPath, zipFilePath);
                     break;
-                case 2: // Descomprimir archivo
+                case 2: 
                     zipFilePath = JOptionPane.showInputDialog("Ingrese la ruta del archivo ZIP a descomprimir:");
                     String destDir = JOptionPane.showInputDialog("Ingrese la ruta del directorio donde se va a copiar:");
                     ZipRAR.descomprimirArchivo(zipFilePath, destDir);
                     break;
-                case 3: // Comprimir archivo con contraseña
+                case 3: 
                     filePath = JOptionPane.showInputDialog("Ingrese la ruta del archivo a comprimir:");
                     zipFilePath = JOptionPane.showInputDialog("Ingrese la ruta del archivo ZIP de salida:");
                     String password = JOptionPane.showInputDialog("Ingrese la contraseña para el archivo comprimido:");
-                    ZipRAR.comprimirArchivoConContraseña(filePath, zipFilePath, password);
+                    ZipRAR.zipFileWithPassword(filePath, zipFilePath, password);
                     break;
-                case 4: // Descomprimir archivo con contraseña
+                case 4: 
                     zipFilePath = JOptionPane.showInputDialog("Ingrese la ruta del archivo ZIP a descomprimir:");
                     destDir = JOptionPane.showInputDialog("Ingrese la ruta del directorio donde se va a copiar:");
                     password = JOptionPane.showInputDialog("Ingrese la contraseña para el archivo ZIP:");
                     ZipRAR.descomprimirArchivoConContraseña(zipFilePath, destDir, password);
                     break;
-                case 5: // Salir
+                case 5: 
                     JOptionPane.showMessageDialog(null, "¡Adiós!");
                     return;
                 default:
